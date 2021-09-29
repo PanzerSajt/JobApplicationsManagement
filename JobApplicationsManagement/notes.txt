@@ -1,0 +1,2 @@
+﻿https://docs.microsoft.com/en-us/ef/core/get-started/wpf
+https://docs.microsoft.com/en-ca/ef/core/miscellaneous/platforms

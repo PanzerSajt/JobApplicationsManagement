@@ -4,14 +4,105 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JobApplicationsManagement"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <StackPanel Margin="10,10,10,10" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Label x:Name="demoLabel" Content="Default content" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-            <Button x:Name="demoButton" Content="Click Me!" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Click="demoButton_Click"/>
-            <Label x:Name="hiddenLabel" Content="" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded" Closing="Window_Closing">
+    <Window.Resources>
+
+        <CollectionViewSource x:Key="employerViewSource"/>
+        <CollectionViewSource x:Key="jobApplicationsViewSource" 
+                              Source="{Binding JobApplications, Source={StaticResource employerViewSource}}"/>
+        <CollectionViewSource x:Key="applicationEventViewSource"
+                              Source="{Binding Events, Source={StaticResource jobApplicationsViewSource}}"/>
+        <CollectionViewSource x:Key="applicationEventViewSource1" d:DesignSource="{d:DesignInstance {x:Type local:ApplicationEvent}, CreateList=True}"/>
+        <CollectionViewSource x:Key="jobApplicationViewSource" d:DesignSource="{d:DesignInstance {x:Type local:JobApplication}, CreateList=True}"/>
+
+        <ObjectDataProvider x:Key="MyEnumValues"
+    MethodName="GetValues"
+    ObjectType="{x:Type sys:Enum}" >
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:ApplicationStatus"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+    </Window.Resources>
+    <Grid DataContext="{StaticResource applicationEventViewSource}">
+        <StackPanel Margin="10,10,10,10" VerticalAlignment="Top" HorizontalAlignment="Center">
+
+
+            <DataGrid x:Name="employersDataGrid" AutoGenerateColumns="False" 
+                      EnableRowVirtualization="True" 
+                      ItemsSource="{Binding Source={StaticResource employerViewSource}}"
+                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                      Margin="10,10,10,10">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Name}" Header="Name" Width="*"/>
+                    <DataGridTextColumn Binding="{Binding FoundBy}" Header="Found by" Width="*"/>
+                    <DataGridTextColumn Binding="{Binding Address}" Header="Address" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <DataGrid x:Name="jobApplicationsDataGrid" AutoGenerateColumns="False" 
+                      EnableRowVirtualization="True" 
+                      ItemsSource="{Binding Source={StaticResource jobApplicationsViewSource}}"
+                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                      Margin="10,10,10,10">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn x:Name="jobApplicationTimeColumn" Header="Application time" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <DatePicker SelectedDate="{Binding ApplicationTime, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Binding="{Binding Comment}" Header="Description" Width="*"/>
+                    <DataGridTextColumn Binding="{Binding Referrer}" Header="Acquaintance" Width="*"/>
+                    <DataGridTemplateColumn x:Name="statusColumn" Header="Status" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <!--ComboBox>
+                                    <-ComboBoxItem Content="{Binding Status}"/>
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock  Text="{Binding Source={StaticResource MyEnumValues}}" VerticalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox-->
+                                <ComboBox ItemsSource="{Binding Source={StaticResource MyEnumValues}}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <DataGrid x:Name="applicationEventsDataGrid" AutoGenerateColumns="False" 
+                      EnableRowVirtualization="True" 
+                      ItemsSource="{Binding Source={StaticResource applicationEventViewSource}}"
+                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                      Margin="10,10,10,10">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn x:Name="applicationEventtimeColumn" Header="Time" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <DatePicker SelectedDate="{Binding Time, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Binding="{Binding Title}" Header="Title" Width="*"/>
+                    <DataGridTextColumn Binding="{Binding Description}" Header="Description" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+
+
         </StackPanel>
+        <StackPanel Margin="10,10,10,10" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+            <Button Content="Save" VerticalAlignment="Top" HorizontalAlignment="Center" Click="Button_Click" Height="20" Width="123" Margin="0, 0, 0, 10"/>
+            <Label x:Name="demoLabel" Content="Default content" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+            <Button x:Name="demoButton" Content="Click Me!" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="75" Click="demoButton_Click"/>
+            <Label x:Name="hiddenLabel" Content="" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+        </StackPanel>
+
 
     </Grid>
 </Window>
